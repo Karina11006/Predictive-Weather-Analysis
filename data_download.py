@@ -18,18 +18,30 @@ with open('weather_data.json', 'r') as str_file:
     str_file = str_file.read()
     json_file = json.loads(str_file)
 
-# manupulate current weather
+# manipulate current weather
 current_weather_dict = json_file['current']
-current_weather_df = pd.DataFrame([current_weather_dict])
+current_weather_dict['date'] = current_weather_dict['time'].split('T')[0]
+current_weather_dict['hour'] = current_weather_dict['time'].split('T')[1]
 
-# manupulate forecast
+current_weather_df = pd.DataFrame([current_weather_dict]).drop(columns='interval')
+
+current_weather_df.rename(columns={'wind_speed_10m':'wind_speed',
+                                   'relative_humidity_2m':'relative_humidity',
+                                    'temperature_2m':'temperature'}, inplace=True)
+
+# manipulate forecast
 forecast_dict = json_file['hourly']
 forecast_df = pd.DataFrame(forecast_dict).rename(columns={'wind_speed_10m':'wind_speed',
                                                           'relative_humidity_2m':'relative_humidity',
                                                           'temperature_2m':'temperature'})
 # split time column into date and hour
-forecast_df
-print(forecast_df)
+for row in forecast_df['time']:
+    forecast_df['date'] = row.split('T')[0]
+    forecast_df['hour'] = row.split('T')[1]
+
+weather_df = pd.concat([current_weather_df, forecast_df])
+print(weather_df.to_string())
+
 
 
 
