@@ -1,0 +1,3 @@
+# ignore iml, xml files
+*.xml
+*.iml
